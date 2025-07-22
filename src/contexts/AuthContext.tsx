@@ -1,7 +1,19 @@
+
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { Database } from "@/integrations/supabase/types";
+
+type UserRole = Database["public"]["Enums"]["user_role"];
+
+type ProfileData = {
+  first_name: string | null;
+  last_name: string | null;
+  avatar_url: string | null;
+  role: UserRole;
+  bio: string | null;
+};
 
 type ProfileUpdateData = {
   first_name?: string;
@@ -13,6 +25,7 @@ type ProfileUpdateData = {
 type AuthContextType = {
   session: Session | null;
   user: User | null;
+  profile: ProfileData | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
@@ -27,14 +40,36 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  async function fetchUserProfile(userId: string) {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, avatar_url, role, bio")
+        .eq("id", userId)
+        .single();
+
+      if (error) throw error;
+      
+      setProfile(data as ProfileData);
+    } catch (error: any) {
+      console.error("Error fetching user profile:", error.message);
+    }
+  }
 
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      }
+      
       setLoading(false);
     });
 
@@ -42,6 +77,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        fetchUserProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
+      
       setLoading(false);
     });
 
@@ -138,20 +180,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       if (!user) throw new Error("Usuário não autenticado");
 
-      // Use type assertion to tell TypeScript that the operation is valid
-      const updateData: Record<string, any> = {};
-      if (data.first_name !== undefined) updateData.first_name = data.first_name;
-      if (data.last_name !== undefined) updateData.last_name = data.last_name;
-      if (data.avatar_url !== undefined) updateData.avatar_url = data.avatar_url;
-      if (data.bio !== undefined) updateData.bio = data.bio;
-
-      // Use type assertion with 'any' to bypass TypeScript restrictions
-      const { error } = await (supabase as any)
-        .from('profiles')
-        .update(updateData)
-        .eq('id', user.id);
+      const { error } = await supabase
+        .from("profiles")
+        .update(data)
+        .eq("id", user.id);
 
       if (error) throw error;
+      
+      // Update the local profile state
+      setProfile(prev => prev ? { ...prev, ...data } : null);
+      
       toast({
         title: "Perfil atualizado",
         description: "Seu perfil foi atualizado com sucesso.",
@@ -169,6 +207,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     session,
     user,
+    profile,
     loading,
     signIn,
     signUp,
