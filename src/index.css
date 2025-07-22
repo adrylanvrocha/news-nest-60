@@ -2,57 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* News Portal Design System - Frances News Inspired
+All colors MUST be HSL. Beautiful, modern design with news-focused aesthetics.
 */
 
 @layer base {
   :root {
+    /* Base colors - Clean and professional */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 13% 18%;
 
+    /* Cards and surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 13% 18%;
 
+    /* Popover and modals */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 13% 18%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary brand - Professional blue inspired by Frances News */
+    --primary: 214 84% 56%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 214 84% 50%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Subtle grays */
+    --secondary: 220 13% 96%;
+    --secondary-foreground: 220 13% 18%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted elements */
+    --muted: 220 13% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent colors */
+    --accent: 220 13% 96%;
+    --accent-foreground: 220 13% 18%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive actions */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and inputs */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 214 84% 56%;
 
-    --radius: 0.5rem;
+    /* News category colors */
+    --news-politics: 348 83% 47%;
+    --news-world: 200 100% 40%;
+    --news-culture: 283 100% 40%;
+    --news-entertainment: 38 92% 50%;
+    --news-podcasts: 145 63% 49%;
 
-    --sidebar-background: 0 0% 98%;
+    /* Special elements */
+    --newsletter-bg: 214 84% 56%;
+    --footer-bg: 220 13% 15%;
+    --badge-bg: 214 84% 56%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    /* Typography scale */
+    --heading-1: 2.5rem;
+    --heading-2: 2rem;
+    --heading-3: 1.5rem;
+    --body-large: 1.125rem;
+    --body-small: 0.875rem;
 
-    --sidebar-primary: 240 5.9% 10%;
+    /* Spacing scale */
+    --space-xs: 0.25rem;
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    /* Animations */
+    --transition-fast: 150ms ease-in-out;
+    --transition-normal: 250ms ease-in-out;
+    --transition-slow: 350ms ease-in-out;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(220 13% 15% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(220 13% 15% / 0.1), 0 2px 4px -1px hsl(220 13% 15% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(220 13% 15% / 0.1), 0 4px 6px -2px hsl(220 13% 15% / 0.05);
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.375rem;
   }
 
   .dark {
