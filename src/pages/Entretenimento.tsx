@@ -1,32 +1,42 @@
+
 import Layout from "@/components/Layout";
 import NewsCard from "@/components/NewsCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useArticles } from "@/hooks/useArticles";
+import { useCategoryBySlug } from "@/hooks/useCategories";
+import { formatTimeAgo } from "@/utils/dateUtils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Entretenimento = () => {
-  const featuredNews = {
-    title: "Adele Anuncia Nova Turnê Mundial com Datas no Brasil",
-    excerpt: "A cantora britânica anunciou oficialmente sua nova turnê mundial que passará por 20 países, incluindo três apresentações no Brasil. Os fãs já podem se preparar para os shows que acontecerão nos principais estádios das capitais brasileiras no próximo ano.",
-    category: "Entretenimento",
-    timeAgo: "há 6 horas",
-    views: "385",
-    image: "/placeholder.svg"
-  };
+  const { data: category } = useCategoryBySlug('entretenimento');
+  const { data: articles, isLoading, error } = useArticles({ 
+    status: 'published', 
+    categoryId: category?.id,
+    limit: 20 
+  });
 
-  const recentNews = [
-    {
-      title: "Novo Filme de Ação Lidera Bilheterias em Estreia",
-      excerpt: "O aguardado filme de ação 'Operação Tempestade' superou todas as expectativas e dominou as bilheterias no fim de semana de estreia, arrecadando mais de R$ 15 milhões somente no Brasil.",
-      category: "Entretenimento",
-      timeAgo: "há 2 dias",
-      views: "142"
-    },
-    {
-      title: "Streaming Anuncia Série Brasileira com Elenco de Peso",
-      excerpt: "Uma das maiores plataformas de streaming do mundo anunciou hoje a produção de uma nova série original brasileira que contará com um elenco de renomados atores nacionais e direção premiada.",
-      category: "Entretenimento",
-      timeAgo: "há 1 dia",
-      views: "98"
-    }
-  ];
+  const transformArticleToNews = (article: any) => ({
+    title: article.title,
+    excerpt: article.excerpt || '',
+    category: article.categories?.name || 'Entretenimento',
+    timeAgo: formatTimeAgo(article.published_at || article.created_at),
+    views: article.view_count?.toString() || '0',
+    image: article.featured_image_url,
+  });
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <Alert variant="destructive">
+            <AlertDescription>
+              Erro ao carregar as notícias de entretenimento. Tente novamente mais tarde.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -42,37 +52,60 @@ const Entretenimento = () => {
           Espaço para Banner BETWEEN_ARTICLES
         </div>
 
-        {/* Featured Article */}
-        <div className="mb-8">
-          <NewsCard
-            title={featuredNews.title}
-            excerpt={featuredNews.excerpt}
-            category={featuredNews.category}
-            timeAgo={featuredNews.timeAgo}
-            views={featuredNews.views}
-            image={featuredNews.image}
-            featured={true}
-          />
-        </div>
+        {isLoading ? (
+          <div className="space-y-8">
+            {/* Featured Article Skeleton */}
+            <div className="space-y-3">
+              <Skeleton className="aspect-video w-full" />
+              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
 
-        {/* Recent News */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recentNews.map((article, index) => (
-            <NewsCard
-              key={index}
-              title={article.title}
-              excerpt={article.excerpt}
-              category={article.category}
-              timeAgo={article.timeAgo}
-              views={article.views}
-            />
-          ))}
-        </div>
+            {/* Grid Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="aspect-video w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : articles && articles.length > 0 ? (
+          <>
+            {/* Featured Article */}
+            <div className="mb-8">
+              <NewsCard
+                {...transformArticleToNews(articles[0])}
+                featured={true}
+              />
+            </div>
+
+            {/* Recent News */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {articles.slice(1).map((article) => (
+                <NewsCard
+                  key={article.id}
+                  {...transformArticleToNews(article)}
+                />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Nenhuma notícia de entretenimento disponível no momento.</p>
+          </div>
+        )}
 
         {/* Load More */}
-        <div className="text-center mt-8">
-          <p className="text-muted-foreground">Não há mais conteúdo para carregar</p>
-        </div>
+        {articles && articles.length > 0 && (
+          <div className="text-center mt-8">
+            <p className="text-muted-foreground">Não há mais conteúdo para carregar</p>
+          </div>
+        )}
       </div>
     </Layout>
   );

@@ -1,44 +1,39 @@
+
 import Layout from "@/components/Layout";
 import PodcastCard from "@/components/PodcastCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { usePodcasts } from "@/hooks/usePodcasts";
+import { formatTimeAgo, formatDuration } from "@/utils/dateUtils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Podcasts = () => {
-  const podcasts = [
-    {
-      title: "Frances News Daily - Edição Matinal",
-      description: "Resumo das principais notícias do dia com análise dos nossos editores. Episódio de 15 minutos com os destaques da política, economia e mundo.",
-      duration: "15:00",
-      timeAgo: "há 1 dia",
-      category: "Podcast"
-    },
-    {
-      title: "Cultura em Foco - Entrevista Especial",
-      description: "Entrevista exclusiva com o diretor do Festival do Cinema Brasileiro. Conversamos sobre os rumos do cinema nacional e as novidades do festival.",
-      duration: "36:00",
-      timeAgo: "há 2 dias",
-      category: "Podcast"
-    },
-    {
-      title: "Mundo em Perspectiva",
-      description: "Análise semanal dos principais acontecimentos internacionais com nossos correspondentes ao redor do mundo.",
-      duration: "45:00",
-      timeAgo: "há 3 dias",
-      category: "Podcast"
-    },
-    {
-      title: "Política em Debate",
-      description: "Análise semanal dos principais acontecimentos políticos com especialistas e comentaristas.",
-      duration: "40:00",
-      timeAgo: "há 4 dias",
-      category: "Podcast"
-    },
-    {
-      title: "Entretenimento Sem Filtro",
-      description: "As últimas novidades do mundo do entretenimento, celebridades e cultura pop brasileira.",
-      duration: "37:30",
-      timeAgo: "há 5 dias",
-      category: "Podcast"
-    }
-  ];
+  const { data: podcasts, isLoading, error } = usePodcasts({ 
+    status: 'published',
+    limit: 20 
+  });
+
+  const transformPodcastToCard = (podcast: any) => ({
+    title: podcast.title,
+    description: podcast.description || '',
+    duration: podcast.duration ? formatDuration(podcast.duration) : '00:00',
+    timeAgo: formatTimeAgo(podcast.published_at || podcast.created_at),
+    image: podcast.thumbnail_url,
+    category: podcast.categories?.name || 'Podcast',
+  });
+
+  if (error) {
+    return (
+      <Layout>
+        <div className="container mx-auto px-4 py-8">
+          <Alert variant="destructive">
+            <AlertDescription>
+              Erro ao carregar os podcasts. Tente novamente mais tarde.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -54,24 +49,44 @@ const Podcasts = () => {
           Espaço para Banner BETWEEN_ARTICLES
         </div>
 
-        {/* Podcasts List */}
-        <div className="space-y-6">
-          {podcasts.map((podcast, index) => (
-            <PodcastCard
-              key={index}
-              title={podcast.title}
-              description={podcast.description}
-              duration={podcast.duration}
-              timeAgo={podcast.timeAgo}
-              category={podcast.category}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="space-y-6">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="flex bg-card rounded-lg border border-border overflow-hidden">
+                <Skeleton className="w-32 h-32" />
+                <div className="flex-1 p-4 space-y-3">
+                  <Skeleton className="h-4 w-20" />
+                  <Skeleton className="h-5 w-3/4" />
+                  <Skeleton className="h-4 w-full" />
+                  <div className="flex justify-between">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-6 w-20" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : podcasts && podcasts.length > 0 ? (
+          <div className="space-y-6">
+            {podcasts.map((podcast) => (
+              <PodcastCard
+                key={podcast.id}
+                {...transformPodcastToCard(podcast)}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">Nenhum podcast disponível no momento.</p>
+          </div>
+        )}
 
         {/* Load More */}
-        <div className="text-center mt-8">
-          <p className="text-muted-foreground">Não há mais conteúdo para carregar</p>
-        </div>
+        {podcasts && podcasts.length > 0 && (
+          <div className="text-center mt-8">
+            <p className="text-muted-foreground">Não há mais conteúdo para carregar</p>
+          </div>
+        )}
       </div>
     </Layout>
   );
