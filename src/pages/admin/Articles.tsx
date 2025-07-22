@@ -32,18 +32,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Database } from "@/integrations/supabase/types";
+import { Article } from "@/lib/types";
 
-type Article = Database["public"]["Tables"]["articles"]["Row"] & {
-  categories: { name: string } | null;
-  profiles: { first_name: string | null; last_name: string | null } | null;
+type ArticleWithRelations = Article & {
+  categories?: { name: string } | null;
+  profiles?: { first_name: string | null; last_name: string | null } | null;
 };
 
 type SortField = "title" | "created_at" | "published_at" | "status";
 type SortDirection = "asc" | "desc";
 
 export default function ArticlesPage() {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [articles, setArticles] = useState<ArticleWithRelations[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortField, setSortField] = useState<SortField>("created_at");
@@ -72,7 +72,7 @@ export default function ArticlesPage() {
       
       if (error) throw error;
       
-      setArticles(data as Article[]);
+      setArticles(data as ArticleWithRelations[]);
     } catch (error: any) {
       console.error("Error fetching articles:", error.message);
       toast({
@@ -239,7 +239,7 @@ export default function ArticlesPage() {
                       `${article.profiles.first_name || ""} ${article.profiles.last_name || ""}`.trim() || "—"
                     ) : "—"}
                   </TableCell>
-                  <TableCell>{getStatusBadge(article.status)}</TableCell>
+                  <TableCell>{getStatusBadge(article.status as 'draft' | 'published' | 'archived')}</TableCell>
                   <TableCell>{formatDate(article.published_at)}</TableCell>
                   <TableCell>{formatDate(article.created_at)}</TableCell>
                   <TableCell className="text-right">

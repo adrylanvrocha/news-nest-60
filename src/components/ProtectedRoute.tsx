@@ -2,9 +2,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { Database } from "@/integrations/supabase/types";
-
-type UserRole = Database["public"]["Enums"]["user_role"];
+import { UserRole } from "@/lib/types";
 
 interface ProtectedRouteProps {
   children: ReactNode;
