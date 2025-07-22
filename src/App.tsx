@@ -22,6 +22,8 @@ import ResetPassword from "./pages/auth/ResetPassword";
 // Admin Pages
 import AdminDashboard from "./pages/admin/Index";
 import ArticlesPage from "./pages/admin/Articles";
+import ArticleForm from "./pages/admin/ArticleForm";
+import Categories from "./pages/admin/Categories";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +60,30 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="author">
                   <ArticlesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/articles/new" 
+              element={
+                <ProtectedRoute requiredRole="author">
+                  <ArticleForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/articles/:id/edit" 
+              element={
+                <ProtectedRoute requiredRole="author">
+                  <ArticleForm />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/categories" 
+              element={
+                <ProtectedRoute requiredRole="editor">
+                  <Categories />
                 </ProtectedRoute>
               } 
             />
