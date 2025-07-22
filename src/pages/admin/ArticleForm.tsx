@@ -47,7 +47,7 @@ export default function ArticleForm() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { profile } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<string[]>([]);
@@ -151,7 +151,7 @@ export default function ArticleForm() {
   }
 
   async function onSubmit(data: ArticleFormData) {
-    if (!profile?.id) {
+    if (!user?.id) {
       toast({
         variant: "destructive",
         title: "Erro",
@@ -164,8 +164,15 @@ export default function ArticleForm() {
       setLoading(true);
 
       const articleData = {
-        ...data,
-        author_id: profile.id,
+        title: data.title,
+        slug: data.slug,
+        excerpt: data.excerpt,
+        content: data.content,
+        category_id: data.category_id || null,
+        status: data.status,
+        featured_image_url: data.featured_image_url || null,
+        is_featured: data.is_featured,
+        author_id: user.id,
         tags,
         published_at: data.status === "published" ? new Date().toISOString() : null,
       };
@@ -185,7 +192,7 @@ export default function ArticleForm() {
       } else {
         const { error } = await supabase
           .from("articles")
-          .insert([articleData]);
+          .insert(articleData);
 
         if (error) throw error;
         

@@ -127,10 +127,16 @@ export default function Categories() {
 
   async function onSubmit(data: CategoryFormData) {
     try {
+      const categoryData = {
+        name: data.name,
+        slug: data.slug,
+        description: data.description || null,
+      };
+
       if (editingCategory) {
         const { error } = await supabase
           .from("categories")
-          .update(data)
+          .update(categoryData)
           .eq("id", editingCategory.id);
 
         if (error) throw error;
@@ -142,7 +148,7 @@ export default function Categories() {
       } else {
         const { error } = await supabase
           .from("categories")
-          .insert([data]);
+          .insert(categoryData);
 
         if (error) throw error;
 
