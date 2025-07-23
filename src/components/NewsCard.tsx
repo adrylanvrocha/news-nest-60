@@ -1,5 +1,6 @@
 import { Clock, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface NewsCardProps {
   title: string;
@@ -10,6 +11,7 @@ interface NewsCardProps {
   image?: string;
   featured?: boolean;
   variant?: "default" | "horizontal" | "small";
+  slug?: string;
 }
 
 const NewsCard = ({ 
@@ -20,8 +22,16 @@ const NewsCard = ({
   views, 
   image, 
   featured = false,
-  variant = "default" 
+  variant = "default",
+  slug
 }: NewsCardProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (slug) {
+      navigate(`/article/${slug}`);
+    }
+  };
   const getCategoryColor = (cat: string) => {
     switch (cat.toLowerCase()) {
       case "política":
@@ -41,7 +51,10 @@ const NewsCard = ({
 
   if (variant === "horizontal") {
     return (
-      <article className="group bg-card rounded-lg shadow-news-sm hover:shadow-news-md transition-all duration-normal border border-border overflow-hidden">
+      <article 
+        className={`group bg-card rounded-lg shadow-news-sm hover:shadow-news-md transition-all duration-normal border border-border overflow-hidden ${slug ? 'cursor-pointer' : ''}`}
+        onClick={handleClick}
+      >
         <div className="flex">
           {image && (
             <div className="w-48 h-32 bg-muted flex-shrink-0">
@@ -85,7 +98,10 @@ const NewsCard = ({
 
   if (variant === "small") {
     return (
-      <article className="group bg-card rounded-lg shadow-news-sm hover:shadow-news-md transition-all duration-normal border border-border overflow-hidden">
+      <article 
+        className={`group bg-card rounded-lg shadow-news-sm hover:shadow-news-md transition-all duration-normal border border-border overflow-hidden ${slug ? 'cursor-pointer' : ''}`}
+        onClick={handleClick}
+      >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-2">
             <Badge 
@@ -114,7 +130,10 @@ const NewsCard = ({
   }
 
   return (
-    <article className="group bg-card rounded-lg shadow-news-sm hover:shadow-news-md transition-all duration-normal border border-border overflow-hidden">
+    <article 
+      className={`group bg-card rounded-lg shadow-news-sm hover:shadow-news-md transition-all duration-normal border border-border overflow-hidden ${slug ? 'cursor-pointer' : ''}`}
+      onClick={handleClick}
+    >
       {image && (
         <div className="aspect-video bg-muted">
           <img 

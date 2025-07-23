@@ -8,6 +8,7 @@ interface NewsItem {
   timeAgo: string;
   views: string;
   image?: string;
+  slug?: string;
 }
 
 interface RecentNewsProps {
@@ -36,6 +37,7 @@ const RecentNews = ({ title, viewAllHref, news }: RecentNewsProps) => {
             timeAgo={item.timeAgo}
             views={item.views}
             image={item.image}
+            slug={item.slug}
           />
         ))}
       </div>

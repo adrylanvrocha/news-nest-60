@@ -8,6 +8,7 @@ interface NewsItem {
   timeAgo: string;
   views: string;
   image?: string;
+  slug?: string;
 }
 
 interface CategorySectionProps {
@@ -57,6 +58,7 @@ const CategorySection = ({ title, category, viewAllHref, news }: CategorySection
               timeAgo={news[0].timeAgo}
               views={news[0].views}
               image={news[0].image}
+              slug={news[0].slug}
             />
           </div>
 
@@ -71,6 +73,7 @@ const CategorySection = ({ title, category, viewAllHref, news }: CategorySection
                 timeAgo={item.timeAgo}
                 views={item.views}
                 variant="horizontal"
+                slug={item.slug}
               />
             ))}
           </div>

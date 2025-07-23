@@ -31,6 +31,7 @@ type AuthContextType = {
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (password: string) => Promise<void>;
   updateProfile: (data: ProfileUpdateData) => Promise<void>;
+  getRedirectPath: (role: UserRole) => string;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,6 +42,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+
+  function getRedirectPath(role: UserRole): string {
+    switch (role) {
+      case 'admin':
+      case 'editor':
+      case 'author':
+        return '/admin';
+      case 'subscriber':
+      default:
+        return '/';
+    }
+  }
 
   async function fetchUserProfile(userId: string) {
     try {
@@ -213,6 +226,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     forgotPassword,
     resetPassword,
     updateProfile,
+    getRedirectPath,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

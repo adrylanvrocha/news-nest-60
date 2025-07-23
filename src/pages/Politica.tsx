@@ -22,6 +22,7 @@ const Politica = () => {
     timeAgo: formatTimeAgo(article.published_at || article.created_at),
     views: article.view_count?.toString() || '0',
     image: article.featured_image_url,
+    slug: article.slug,
   });
 
   if (error) {
