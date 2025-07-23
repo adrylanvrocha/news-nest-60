@@ -62,7 +62,7 @@ export default function ArticleForm() {
       slug: "",
       excerpt: "",
       content: "",
-      category_id: "",
+      category_id: "none",
       status: "draft",
       featured_image_url: "",
       is_featured: false,
@@ -109,7 +109,7 @@ export default function ArticleForm() {
         slug: data.slug,
         excerpt: data.excerpt || "",
         content: data.content || "",
-        category_id: data.category_id || "",
+        category_id: data.category_id || "none",
         status: data.status as "draft" | "published" | "archived",
         featured_image_url: data.featured_image_url || "",
         is_featured: data.is_featured,
@@ -168,7 +168,7 @@ export default function ArticleForm() {
         slug: data.slug,
         excerpt: data.excerpt,
         content: data.content,
-        category_id: data.category_id || null,
+        category_id: data.category_id === "none" ? null : data.category_id || null,
         status: data.status,
         featured_image_url: data.featured_image_url || null,
         is_featured: data.is_featured,
@@ -387,7 +387,7 @@ export default function ArticleForm() {
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              <SelectItem value="">Nenhuma categoria</SelectItem>
+                              <SelectItem value="none">Nenhuma categoria</SelectItem>
                               {categories.map((category) => (
                                 <SelectItem key={category.id} value={category.id}>
                                   {category.name}
