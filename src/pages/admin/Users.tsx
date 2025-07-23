@@ -78,22 +78,38 @@ export default function Users() {
 
       let usersWithEmail = profiles || [];
 
-      // If current user is admin, try to get auth users list
+      // Use Edge Function to get user emails if admin
       if (currentProfile?.role === 'admin') {
         try {
-          const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
-          if (!authError && authUsers?.users) {
+          const { data: emailData, error: emailError } = await supabase.functions.invoke('get-user-emails', {
+            body: { userIds: profiles?.map(p => p.id) || [] }
+          });
+          
+          if (!emailError && emailData?.success) {
             usersWithEmail = profiles?.map(profile => {
-              const authUser = authUsers.users.find((u: any) => u.id === profile.id);
+              const emailInfo = emailData.emails?.find((e: any) => e.user_id === profile.id);
               return {
                 ...profile,
-                email: authUser?.email || `user-${profile.id.slice(0, 8)}@example.com`
+                email: emailInfo?.email || `user-${profile.id.slice(0, 8)}@example.com`
               };
             }) || [];
+          } else {
+            // Fallback: use profiles without email
+            usersWithEmail = profiles?.map(profile => ({
+              ...profile,
+              email: `user-${profile.id.slice(0, 8)}@example.com`
+            })) || [];
           }
-        } catch (authError) {
-          console.log("Auth admin access not available, using profiles only");
+        } catch (error) {
+          console.log("Email fetch failed, using profiles only");
+          usersWithEmail = profiles?.map(profile => ({
+            ...profile,
+            email: `user-${profile.id.slice(0, 8)}@example.com`
+          })) || [];
         }
+      } else {
+        // Non-admin users don't see emails
+        usersWithEmail = profiles || [];
       }
       
       setUsers(usersWithEmail);

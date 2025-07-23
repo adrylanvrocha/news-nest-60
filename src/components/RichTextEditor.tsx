@@ -1,5 +1,6 @@
-import { Editor } from '@tinymce/tinymce-react';
-import { useRef } from 'react';
+import { useRef, useMemo } from 'react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 interface RichTextEditorProps {
   value: string;
@@ -14,33 +15,47 @@ export default function RichTextEditor({
   placeholder = "Escreva seu conteúdo aqui...",
   height = 400 
 }: RichTextEditorProps) {
-  const editorRef = useRef<any>(null);
+  const quillRef = useRef<ReactQuill>(null);
+
+  const modules = useMemo(() => ({
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      [{ 'size': [] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }, 
+       { 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'align': [] }],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
+  }), []);
+
+  const formats = [
+    'header', 'font', 'size',
+    'bold', 'italic', 'underline', 'strike', 'blockquote',
+    'color', 'background',
+    'list', 'bullet', 'indent',
+    'align',
+    'link', 'image', 'video'
+  ];
 
   return (
-    <div className="border rounded-md">
-      <Editor
-        apiKey="no-api-key"
-        onInit={(evt, editor) => editorRef.current = editor}
+    <div className="border rounded-md bg-background">
+      <ReactQuill
+        ref={quillRef}
+        theme="snow"
         value={value}
-        init={{
+        onChange={onChange}
+        modules={modules}
+        formats={formats}
+        placeholder={placeholder}
+        style={{
           height: height,
-          menubar: false,
-          plugins: [
-            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-            'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'
-          ],
-          toolbar: 'undo redo | blocks | ' +
-            'bold italic forecolor | alignleft aligncenter ' +
-            'alignright alignjustify | bullist numlist outdent indent | ' +
-            'removeformat | help',
-          content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-          placeholder: placeholder,
-          skin: 'oxide',
-          content_css: 'default',
-          branding: false,
+          backgroundColor: 'hsl(var(--background))',
         }}
-        onEditorChange={(content) => onChange(content)}
+        className="rich-text-editor"
       />
     </div>
   );

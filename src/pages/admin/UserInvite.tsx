@@ -56,40 +56,39 @@ export default function UserInvite() {
   const onSubmit = async (data: InviteFormData) => {
     try {
       setLoading(true);
-
-      // Create user with admin API
-      const { data: authUser, error: authError } = await supabase.auth.admin.createUser({
-        email: data.email,
-        password: data.password,
-        email_confirm: true,
-        user_metadata: {
-          first_name: data.first_name,
-          last_name: data.last_name,
-        },
+      
+      console.log("Creating user with data:", data);
+      
+      // Create user using Edge Function
+      const { data: result, error } = await supabase.functions.invoke('create-admin-user', {
+        body: {
+          email: data.email,
+          password: data.password,
+          firstName: data.first_name,
+          lastName: data.last_name,
+          role: data.role,
+        }
       });
 
-      if (authError) throw authError;
-
-      if (authUser.user) {
-        // Update profile with role
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .update({
-            first_name: data.first_name,
-            last_name: data.last_name,
-            role: data.role,
-          })
-          .eq("id", authUser.user.id);
-
-        if (profileError) throw profileError;
-
-        toast({
-          title: "Usuário criado com sucesso!",
-          description: `${data.first_name} foi adicionado como ${data.role}.`,
-        });
-
-        navigate("/admin/users");
+      if (error) {
+        console.error("Edge function error:", error);
+        throw new Error(error.message);
       }
+
+      if (!result?.success) {
+        console.error("User creation failed:", result);
+        throw new Error(result?.error || "User creation failed");
+      }
+
+      console.log("User created successfully:", result.user);
+
+      toast({
+        title: "Usuário criado com sucesso",
+        description: `${data.first_name} ${data.last_name} foi criado como ${data.role}.`,
+      });
+
+      // Redirect to users page
+      navigate("/admin/users");
     } catch (error: any) {
       console.error("Error creating user:", error);
       toast({

@@ -31,6 +31,8 @@ import Newsletter from "./pages/admin/Newsletter";
 import Analytics from "./pages/admin/Analytics";
 import Settings from "./pages/admin/Settings";
 import UserInvite from "./pages/admin/UserInvite";
+import Media from "./pages/admin/Media";
+import Banners from "./pages/admin/Banners";
 
 const queryClient = new QueryClient();
 
@@ -147,6 +149,22 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Settings />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/media" 
+              element={
+                <ProtectedRoute requiredRole="author">
+                  <Media />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/banners" 
+              element={
+                <ProtectedRoute requiredRole="editor">
+                  <Banners />
                 </ProtectedRoute>
               } 
             />
