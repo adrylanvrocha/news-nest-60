@@ -17,6 +17,15 @@ export type Article = {
   tags?: string[];
   created_at: string;
   updated_at: string;
+  // Joined data from queries
+  categories?: {
+    name: string;
+    slug: string;
+  };
+  profiles?: {
+    first_name: string | null;
+    last_name: string | null;
+  };
 };
 
 export type Profile = {
