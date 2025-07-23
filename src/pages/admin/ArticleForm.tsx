@@ -5,6 +5,7 @@ import AdminLayout from "@/components/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/RichTextEditor";
 import { 
   Form, 
   FormControl, 
@@ -334,10 +335,11 @@ export default function ArticleForm() {
                     <FormItem>
                       <FormLabel>Conteúdo</FormLabel>
                       <FormControl>
-                        <Textarea
-                          {...field}
+                        <RichTextEditor
+                          value={field.value || ""}
+                          onChange={field.onChange}
                           placeholder="Escreva o conteúdo do artigo..."
-                          className="min-h-[300px]"
+                          height={400}
                         />
                       </FormControl>
                       <FormMessage />

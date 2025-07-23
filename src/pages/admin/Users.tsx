@@ -53,18 +53,50 @@ export default function Users() {
   async function fetchUsers() {
     try {
       setLoading(true);
+      console.log("Fetching users...");
       
-      // Fetch profiles with auth data
+      // Fetch profiles
       const { data: profiles, error: profilesError } = await supabase
         .from("profiles")
         .select("*")
         .order("created_at", { ascending: false });
       
-      if (profilesError) throw profilesError;
+      if (profilesError) {
+        console.error("Profiles error:", profilesError);
+        throw profilesError;
+      }
 
-      // For admin users, we could try to get email from auth metadata
-      // Since we can't directly query auth.users, we'll work with what we have
-      setUsers(profiles || []);
+      console.log("Profiles fetched:", profiles);
+
+      // Try to get auth users for email data (admin only)
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const { data: currentProfile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", currentUser?.id)
+        .single();
+
+      let usersWithEmail = profiles || [];
+
+      // If current user is admin, try to get auth users list
+      if (currentProfile?.role === 'admin') {
+        try {
+          const { data: authUsers, error: authError } = await supabase.auth.admin.listUsers();
+          if (!authError && authUsers?.users) {
+            usersWithEmail = profiles?.map(profile => {
+              const authUser = authUsers.users.find((u: any) => u.id === profile.id);
+              return {
+                ...profile,
+                email: authUser?.email || `user-${profile.id.slice(0, 8)}@example.com`
+              };
+            }) || [];
+          }
+        } catch (authError) {
+          console.log("Auth admin access not available, using profiles only");
+        }
+      }
+      
+      setUsers(usersWithEmail);
     } catch (error: any) {
       console.error("Error fetching users:", error.message);
       toast({
@@ -165,7 +197,10 @@ export default function Users() {
     if (user.first_name || user.last_name) {
       return `${user.first_name || ""} ${user.last_name || ""}`.trim();
     }
-    return user.email || "Usuário sem nome";
+    if (user.email) {
+      return user.email;
+    }
+    return `Usuário ${user.id.slice(0, 8)}`;
   };
 
   return (
@@ -196,6 +231,10 @@ export default function Users() {
                 <SelectItem value="subscriber">Assinantes</SelectItem>
               </SelectContent>
             </Select>
+            
+            <Button onClick={() => window.location.href = '/admin/users/invite'}>
+              Convidar Usuário
+            </Button>
           </div>
         </div>
 

@@ -30,6 +30,7 @@ import Comments from "./pages/admin/Comments";
 import Newsletter from "./pages/admin/Newsletter";
 import Analytics from "./pages/admin/Analytics";
 import Settings from "./pages/admin/Settings";
+import UserInvite from "./pages/admin/UserInvite";
 
 const queryClient = new QueryClient();
 
@@ -98,6 +99,14 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="admin">
                   <Users />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users/invite" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <UserInvite />
                 </ProtectedRoute>
               } 
             />
