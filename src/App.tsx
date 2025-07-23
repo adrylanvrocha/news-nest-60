@@ -24,6 +24,12 @@ import AdminDashboard from "./pages/admin/Index";
 import ArticlesPage from "./pages/admin/Articles";
 import ArticleForm from "./pages/admin/ArticleForm";
 import Categories from "./pages/admin/Categories";
+import Users from "./pages/admin/Users";
+import PodcastsPage from "./pages/admin/PodcastsPage";
+import Comments from "./pages/admin/Comments";
+import Newsletter from "./pages/admin/Newsletter";
+import Analytics from "./pages/admin/Analytics";
+import Settings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +90,54 @@ const App = () => (
               element={
                 <ProtectedRoute requiredRole="editor">
                   <Categories />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/users" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Users />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/podcasts" 
+              element={
+                <ProtectedRoute requiredRole="author">
+                  <PodcastsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/comments" 
+              element={
+                <ProtectedRoute requiredRole="editor">
+                  <Comments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/newsletter" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Newsletter />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/analytics" 
+              element={
+                <ProtectedRoute requiredRole="editor">
+                  <Analytics />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/settings" 
+              element={
+                <ProtectedRoute requiredRole="admin">
+                  <Settings />
                 </ProtectedRoute>
               } 
             />
