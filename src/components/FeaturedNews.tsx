@@ -2,6 +2,7 @@ import heroImage from "@/assets/hero-news.jpg";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 interface FeaturedNewsProps {
   title: string;
@@ -9,9 +10,17 @@ interface FeaturedNewsProps {
   category: string;
   timeAgo: string;
   views: string;
+  slug?: string;
 }
 
-const FeaturedNews = ({ title, excerpt, category, timeAgo, views }: FeaturedNewsProps) => {
+const FeaturedNews = ({ title, excerpt, category, timeAgo, views, slug }: FeaturedNewsProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (slug) {
+      navigate(`/article/${slug}`);
+    }
+  };
   const getCategoryColor = (cat: string) => {
     switch (cat.toLowerCase()) {
       case "política":
@@ -30,7 +39,7 @@ const FeaturedNews = ({ title, excerpt, category, timeAgo, views }: FeaturedNews
   };
 
   return (
-    <div className="relative rounded-xl overflow-hidden">
+    <div className={`relative rounded-xl overflow-hidden ${slug ? 'cursor-pointer' : ''}`} onClick={handleClick}>
       {/* Image with gradient overlay */}
       <div className="relative aspect-[2.5/1] overflow-hidden">
         <img 
@@ -70,6 +79,7 @@ const FeaturedNews = ({ title, excerpt, category, timeAgo, views }: FeaturedNews
             <Button 
               variant="default"
               className="bg-primary hover:bg-primary-hover"
+              onClick={slug ? handleClick : undefined}
             >
               Ler mais
             </Button>
