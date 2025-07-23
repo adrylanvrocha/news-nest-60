@@ -83,6 +83,54 @@ export type Database = {
           },
         ]
       }
+      banners: {
+        Row: {
+          click_count: number | null
+          created_at: string
+          created_by: string
+          end_date: string | null
+          id: string
+          image_url: string | null
+          impression_count: number | null
+          is_active: boolean
+          link_url: string | null
+          position: string
+          start_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          click_count?: number | null
+          created_at?: string
+          created_by: string
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          impression_count?: number | null
+          is_active?: boolean
+          link_url?: string | null
+          position?: string
+          start_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          click_count?: number | null
+          created_at?: string
+          created_by?: string
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          impression_count?: number | null
+          is_active?: boolean
+          link_url?: string | null
+          position?: string
+          start_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string | null
