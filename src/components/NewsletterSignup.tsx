@@ -1,7 +1,53 @@
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const NewsletterSignup = () => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Email obrigatório",
+        description: "Por favor, insira seu email para se inscrever."
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const { data, error } = await supabase.rpc('subscribe_to_newsletter', {
+        p_email: email.trim()
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Inscrição realizada!",
+        description: "Você foi inscrito com sucesso na nossa newsletter."
+      });
+      
+      setEmail("");
+    } catch (error: any) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        variant: "destructive",
+        title: "Erro na inscrição",
+        description: error.message || "Houve um erro ao processar sua inscrição. Tente novamente."
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section className="bg-muted py-12 rounded-lg">
       <div className="container mx-auto px-4">
@@ -17,15 +63,24 @@ const NewsletterSignup = () => {
             <br />
             Sem spam, apenas conteúdo relevante.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
             <Input
+              type="email"
               placeholder="Seu melhor email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-white"
+              disabled={isLoading}
+              required
             />
-            <Button className="bg-primary hover:bg-primary-hover whitespace-nowrap">
-              Inscrever-se
+            <Button 
+              type="submit"
+              className="bg-primary hover:bg-primary-hover whitespace-nowrap"
+              disabled={isLoading}
+            >
+              {isLoading ? "Inscrevendo..." : "Inscrever-se"}
             </Button>
-          </div>
+          </form>
           <p className="text-xs text-muted-foreground mt-3">
             Ao se inscrever, você concorda com nossa política de privacidade.
           </p>
