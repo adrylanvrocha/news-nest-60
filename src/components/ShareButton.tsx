@@ -19,7 +19,7 @@ const ShareButton = ({ title, slug, url }: ShareButtonProps) => {
   
   // Use the share-preview function URL for social media sharing
   const shareUrl = url || `https://ghtdsyjuatsfombkrusu.supabase.co/functions/v1/share-preview/${slug}`;
-  const appUrl = `https://5cd3520e-06ae-454f-9bae-4ece3e396bdc.sandbox.lovable.dev/artigos/${slug}`;
+  const appUrl = `https://francesnews-lovable.lovable.app/artigos/${slug}`;
   
   const handleCopyLink = async () => {
     try {
