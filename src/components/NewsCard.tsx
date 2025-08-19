@@ -29,7 +29,7 @@ const NewsCard = ({
 
   const handleClick = () => {
     if (slug) {
-      navigate(`/article/${slug}`);
+      navigate(`/artigos/${slug}`);
     }
   };
   const getCategoryColor = (cat: string) => {

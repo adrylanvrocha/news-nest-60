@@ -8,6 +8,7 @@ import { Clock, Eye, ArrowLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Layout from "@/components/Layout";
+import ShareButton from "@/components/ShareButton";
 
 export default function ArticleView() {
   const { slug } = useParams<{ slug: string }>();
@@ -144,17 +145,24 @@ export default function ArticleView() {
             </p>
           )}
 
-          <div className="flex items-center gap-6 text-sm text-muted-foreground border-b border-border pb-6">
-            <span>Por {authorName}</span>
-            <span className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              {timeAgo}
-            </span>
-            <span className="flex items-center gap-1">
-              <Eye className="w-4 h-4" />
-              {article.view_count || 0} visualizações
-            </span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-6 text-sm text-muted-foreground">
+              <span>Por {authorName}</span>
+              <span className="flex items-center gap-1">
+                <Clock className="w-4 h-4" />
+                {timeAgo}
+              </span>
+              <span className="flex items-center gap-1">
+                <Eye className="w-4 h-4" />
+                {article.view_count || 0} visualizações
+              </span>
+            </div>
+            <ShareButton 
+              title={article.title}
+              slug={article.slug}
+            />
           </div>
+          <div className="border-b border-border mt-4"></div>
         </header>
 
         {article.featured_image_url && (
