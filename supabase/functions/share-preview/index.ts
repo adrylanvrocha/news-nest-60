@@ -70,11 +70,31 @@ serve(async (req) => {
                                  article.featured_image_url.includes('/storage/v1/object/public/');
           
           if (isSupabaseImage) {
-            imageUrl = `${article.featured_image_url}?width=1200&height=630&resize=cover&quality=85&format=jpeg&v=${cacheParam}`;
-            imageType = 'image/jpeg';
+            // Test if the image exists first
+            try {
+              const testResponse = await fetch(article.featured_image_url, { method: 'HEAD' });
+              if (testResponse.ok) {
+                imageUrl = `${article.featured_image_url}?width=1200&height=630&resize=cover&quality=85&format=jpeg&v=${cacheParam}`;
+                imageType = 'image/jpeg';
+              } else {
+                console.log('Supabase image not accessible, using fallback');
+              }
+            } catch (fetchError) {
+              console.log('Error testing Supabase image, using fallback:', fetchError);
+            }
           } else {
-            imageUrl = `${article.featured_image_url}?v=${cacheParam}`;
-            imageType = 'image/jpeg';
+            // For external images, test accessibility
+            try {
+              const testResponse = await fetch(article.featured_image_url, { method: 'HEAD' });
+              if (testResponse.ok) {
+                imageUrl = `${article.featured_image_url}?v=${cacheParam}`;
+                imageType = 'image/jpeg';
+              } else {
+                console.log('External image not accessible, using fallback');
+              }
+            } catch (fetchError) {
+              console.log('Error testing external image, using fallback:', fetchError);
+            }
           }
         } catch (error) {
           console.error('Error processing image URL:', error);
