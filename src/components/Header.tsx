@@ -9,7 +9,8 @@ const Header = () => {
     { name: "Mundo", href: "/mundo" },
     { name: "Cultura", href: "/cultura" },
     { name: "Entretenimento", href: "/entretenimento" },
-    { name: "Podcasts", href: "/podcasts" }
+    { name: "Podcasts", href: "/podcasts" },
+    { name: "Todo", href: "/todo" }
   ];
 
   return (

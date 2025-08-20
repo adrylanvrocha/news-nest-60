@@ -34,6 +34,7 @@ import UserInvite from "./pages/admin/UserInvite";
 import Media from "./pages/admin/Media";
 import Banners from "./pages/admin/Banners";
 import ArticleView from "./pages/ArticleView";
+import Todo from "./pages/Todo";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
             <Route path="/cultura" element={<Cultura />} />
             <Route path="/entretenimento" element={<Entretenimento />} />
             <Route path="/podcasts" element={<Podcasts />} />
+            <Route path="/todo" element={<Todo />} />
             <Route path="/article/:slug" element={<ArticleView />} />
             <Route path="/artigos/:slug" element={<ArticleView />} />
             <Route path="/auth/login" element={<Login />} />

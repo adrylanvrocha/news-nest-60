@@ -54,7 +54,7 @@ serve(async (req) => {
     
     // For bots, return HTML with Open Graph tags
     if (isBot) {
-      const baseUrl = 'https://francesnews-lovable.lovable.app';
+      const baseUrl = Deno.env.get('SITE_URL') || 'https://francesnews-lovable.lovable.app';
       const articleUrl = `${baseUrl}/artigos/${article.slug}`;
       const imageUrl = article.featured_image_url || `${baseUrl}/placeholder.svg`;
       const authorName = article.profiles?.first_name && article.profiles?.last_name 
@@ -120,7 +120,8 @@ serve(async (req) => {
     }
 
     // For regular users, redirect to the main app
-    const appUrl = `https://francesnews-lovable.lovable.app/artigos/${article.slug}`;
+    const baseUrl = Deno.env.get('SITE_URL') || 'https://francesnews-lovable.lovable.app';
+    const appUrl = `${baseUrl}/artigos/${article.slug}`;
     
     return new Response(null, {
       status: 302,
