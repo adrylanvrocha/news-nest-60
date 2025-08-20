@@ -60,41 +60,42 @@ const AdminSidebar = () => {
       href: "/admin/articles/new",
       icon: PlusCircle,
     },
-    {
-      title: "Podcasts",
-      href: "/admin/podcasts",
-      icon: Headphones,
-    },
-    {
-      title: "Categorias",
-      href: "/admin/categories",
-      icon: FolderOpen,
-    },
-    {
-      title: "Comentários",
-      href: "/admin/comments",
-      icon: MessageSquare,
-    },
-    {
-      title: "Banners",
-      href: "/admin/banners",
-      icon: Image,
-    },
+    // Temporarily hide unmigrated routes to prevent 404s
+    // {
+    //   title: "Podcasts",
+    //   href: "/admin/podcasts",
+    //   icon: Headphones,
+    // },
+    // {
+    //   title: "Categorias",
+    //   href: "/admin/categories",
+    //   icon: FolderOpen,
+    // },
+    // {
+    //   title: "Comentários",
+    //   href: "/admin/comments",
+    //   icon: MessageSquare,
+    // },
+    // {
+    //   title: "Banners",
+    //   href: "/admin/banners",
+    //   icon: Image,
+    // },
     {
       title: "Usuários",
       href: "/admin/users",
       icon: Users,
     },
-    {
-      title: "Newsletter",
-      href: "/admin/newsletter",
-      icon: Mail,
-    },
-    {
-      title: "Mídia",
-      href: "/admin/media",
-      icon: Image,
-    },
+    // {
+    //   title: "Newsletter",
+    //   href: "/admin/newsletter",
+    //   icon: Mail,
+    // },
+    // {
+    //   title: "Mídia",
+    //   href: "/admin/media",
+    //   icon: Image,
+    // },
     {
       title: "Analytics",
       href: "/admin/analytics",

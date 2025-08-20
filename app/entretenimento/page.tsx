@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import Layout from '@/components/Layout';
 import NewsCard from '@/components/NewsCard';
+import { formatTimeAgo } from '@/utils/dateUtils';
+import { normalizeImageUrl } from '@/utils/imageUtils';
 
 export const metadata: Metadata = {
   title: 'Entretenimento',
@@ -53,18 +55,13 @@ export default async function EntretenimentoPage() {
           {articles.map((article) => (
             <NewsCard
               key={article.id}
-              id={article.id}
               title={article.title}
-              excerpt={article.excerpt}
-              imageUrl={article.featured_image_url}
-              publishedAt={article.published_at}
+              excerpt={article.excerpt || ''}
+              category={article.categories?.name || 'Geral'}
+              timeAgo={formatTimeAgo(article.published_at)}
+              views={article.view_count?.toString() || '0'}
+              image={normalizeImageUrl(article.featured_image_url)}
               slug={article.slug}
-              category={article.categories?.name}
-              author={
-                article.profiles
-                  ? `${article.profiles.first_name} ${article.profiles.last_name}`.trim()
-                  : 'Autor'
-              }
             />
           ))}
         </div>

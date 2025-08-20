@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import Layout from '@/components/Layout';
 import ShareButton from '@/components/ShareButton';
 import { formatTimeAgo } from '@/utils/dateUtils';
+import { normalizeImageUrl, normalizeOgImage } from '@/utils/imageUtils';
 
 interface Props {
   params: { slug: string };
@@ -45,9 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     };
   }
 
-  const imageUrl = article.featured_image_url 
-    ? `https://ghtdsyjuatsfombkrusu.supabase.co${article.featured_image_url}`
-    : null;
+  const imageUrl = normalizeOgImage(article.featured_image_url);
 
   return {
     title: article.title,
@@ -99,7 +98,7 @@ export default async function ArticlePage({ params }: Props) {
         {article.featured_image_url && (
           <div className="mb-8">
             <img
-              src={article.featured_image_url}
+              src={normalizeImageUrl(article.featured_image_url) || ''}
               alt={article.title}
               className="w-full h-64 md:h-96 object-cover rounded-lg"
             />

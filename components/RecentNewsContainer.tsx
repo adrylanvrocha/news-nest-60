@@ -4,6 +4,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import RecentNews from "@/components/RecentNews";
 import { formatTimeAgo } from "@/utils/dateUtils";
+import { normalizeImageUrl } from "@/utils/imageUtils";
 
 const RecentNewsContainer = () => {
   const supabase = createBrowserSupabaseClient();
@@ -65,7 +66,7 @@ const RecentNewsContainer = () => {
     category: article.categories?.name || 'Geral',
     timeAgo: formatTimeAgo(article.published_at),
     views: article.view_count?.toString() || '0',
-    image: article.featured_image_url || undefined,
+    image: normalizeImageUrl(article.featured_image_url),
     slug: article.slug
   })) || [];
 

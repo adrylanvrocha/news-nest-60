@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import Layout from '@/components/Layout';
 import PodcastCard from '@/components/PodcastCard';
+import { normalizeImageUrl } from '@/utils/imageUtils';
 
 export const metadata: Metadata = {
   title: 'Podcasts',
@@ -55,7 +56,7 @@ export default async function PodcastsPage() {
               id={podcast.id}
               title={podcast.title}
               description={podcast.description}
-              thumbnailUrl={podcast.thumbnail_url}
+              thumbnailUrl={normalizeImageUrl(podcast.thumbnail_url)}
               audioUrl={podcast.audio_url}
               publishedAt={podcast.published_at}
               duration={podcast.duration}
