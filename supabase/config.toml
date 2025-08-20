@@ -21,8 +21,7 @@ max_client_conn = 100
 
 [realtime]
 enabled = true
-ip_version = "ipv4"
-port = 54323
+ip_version = "IPv4"
 max_header_length = 4096
 
 [studio]
@@ -39,18 +38,14 @@ pop3_port = 54327
 
 [storage]
 enabled = true
-port = 54328
 file_size_limit = "50MiB"
 image_transformation = {enabled = true}
 
 [auth]
 enabled = true
-port = 54329
 site_url = "http://127.0.0.1:3000"
 additional_redirect_urls = ["https://127.0.0.1:3000"]
 jwt_expiry = 3600
-enable_anonymous_users = false
-enable_confirmations = true
 
 [auth.email]
 enable_signup = true
@@ -75,6 +70,6 @@ verify_jwt = true
 [functions.share-preview]
 verify_jwt = false
 
-[edge-runtime]
-policy = "per_request"
+[edge_runtime]
+policy = "per_worker"
 inspector_port = 8083
