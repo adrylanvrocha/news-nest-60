@@ -56,7 +56,19 @@ serve(async (req) => {
     if (isBot) {
       const baseUrl = Deno.env.get('SITE_URL') || 'https://francesnews-lovable.lovable.app';
       const articleUrl = `${baseUrl}/artigos/${article.slug}`;
-      const imageUrl = article.featured_image_url || `${baseUrl}/placeholder.svg`;
+      
+      // Optimize image for social media sharing
+      let imageUrl = `${baseUrl}/placeholder.svg`;
+      if (article.featured_image_url) {
+        // Use Supabase image transformation for optimal WhatsApp display
+        // Transform to 1200x630 (optimal for Open Graph) with quality optimization
+        const isSupabaseImage = article.featured_image_url.includes('supabase.co') || 
+                               article.featured_image_url.includes('/storage/v1/object/public/');
+        const transformedImageUrl = isSupabaseImage
+          ? `${article.featured_image_url}?width=1200&height=630&resize=cover&quality=85&format=webp`
+          : article.featured_image_url;
+        imageUrl = transformedImageUrl;
+      }
       const authorName = article.profiles?.first_name && article.profiles?.last_name 
         ? `${article.profiles.first_name} ${article.profiles.last_name}`
         : 'Frances News';
@@ -66,6 +78,7 @@ serve(async (req) => {
 <html>
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${article.title} - Frances News</title>
   <meta name="description" content="${article.excerpt || 'Leia mais em Frances News'}">
   
@@ -73,26 +86,48 @@ serve(async (req) => {
   <meta property="og:title" content="${article.title}">
   <meta property="og:description" content="${article.excerpt || 'Leia mais em Frances News'}">
   <meta property="og:image" content="${imageUrl}">
+  <meta property="og:image:secure_url" content="${imageUrl}">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="${article.title}">
   <meta property="og:url" content="${articleUrl}">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Frances News">
+  <meta property="og:locale" content="pt_BR">
   <meta property="article:author" content="${authorName}">
   <meta property="article:published_time" content="${article.published_at}">
   <meta property="article:section" content="${article.categories?.name || 'Notícias'}">
   
   <!-- Twitter Card tags -->
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@francesnews">
+  <meta name="twitter:creator" content="@francesnews">
   <meta name="twitter:title" content="${article.title}">
   <meta name="twitter:description" content="${article.excerpt || 'Leia mais em Frances News'}">
   <meta name="twitter:image" content="${imageUrl}">
+  <meta name="twitter:image:alt" content="${article.title}">
   
-  <!-- WhatsApp specific -->
-  <meta property="og:image:alt" content="${article.title}">
+  <!-- WhatsApp optimized tags -->
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:secure_url" content="${imageUrl}">
+  <meta name="whatsapp:image" content="${imageUrl}">
+  
+  <!-- Additional image formats for better compatibility -->
+  <meta property="og:image:type" content="image/webp">
+  <meta name="format-detection" content="telephone=no">
+  
+  <!-- Cache control for better performance -->
+  <meta http-equiv="Cache-Control" content="public, max-age=3600">
+  <meta http-equiv="Expires" content="${new Date(Date.now() + 3600000).toUTCString()}">
   
   <!-- Telegram specific -->
   <meta name="telegram:channel" content="@francesnews">
+  
+  <!-- Additional meta tags for better rendering -->
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#1a365d">
   
   <!-- Canonical URL -->
   <link rel="canonical" href="${articleUrl}">
