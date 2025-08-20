@@ -57,17 +57,31 @@ serve(async (req) => {
       const baseUrl = Deno.env.get('SITE_URL') || 'https://francesnews-lovable.lovable.app';
       const articleUrl = `${baseUrl}/artigos/${article.slug}`;
       
-      // Optimize image for social media sharing
-      let imageUrl = `${baseUrl}/placeholder.svg`;
+      // Create cache-busting parameter based on article update time
+      const cacheParam = new Date(article.published_at).getTime();
+      
+      // Use article image or fallback to a reliable placeholder
+      let imageUrl = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=630&fit=crop&crop=center&v=${cacheParam}`;
+      let imageType = 'image/jpeg';
+      
       if (article.featured_image_url) {
-        // Use Supabase image transformation for optimal WhatsApp display
-        // Transform to 1200x630 (optimal for Open Graph) with quality optimization
-        const isSupabaseImage = article.featured_image_url.includes('supabase.co') || 
-                               article.featured_image_url.includes('/storage/v1/object/public/');
-        const transformedImageUrl = isSupabaseImage
-          ? `${article.featured_image_url}?width=1200&height=630&resize=cover&quality=85&format=webp`
-          : article.featured_image_url;
-        imageUrl = transformedImageUrl;
+        try {
+          const isSupabaseImage = article.featured_image_url.includes('supabase.co') || 
+                                 article.featured_image_url.includes('/storage/v1/object/public/');
+          
+          if (isSupabaseImage) {
+            imageUrl = `${article.featured_image_url}?width=1200&height=630&resize=cover&quality=85&format=jpeg&v=${cacheParam}`;
+            imageType = 'image/jpeg';
+          } else {
+            imageUrl = `${article.featured_image_url}?v=${cacheParam}`;
+            imageType = 'image/jpeg';
+          }
+        } catch (error) {
+          console.error('Error processing image URL:', error);
+          // Fallback to Unsplash news image with cache busting
+          imageUrl = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=630&fit=crop&crop=center&v=${cacheParam}`;
+          imageType = 'image/jpeg';
+        }
       }
       const authorName = article.profiles?.first_name && article.profiles?.last_name 
         ? `${article.profiles.first_name} ${article.profiles.last_name}`
@@ -87,7 +101,7 @@ serve(async (req) => {
   <meta property="og:description" content="${article.excerpt || 'Leia mais em Frances News'}">
   <meta property="og:image" content="${imageUrl}">
   <meta property="og:image:secure_url" content="${imageUrl}">
-  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:type" content="${imageType}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="${article.title}">
@@ -109,18 +123,16 @@ serve(async (req) => {
   <meta name="twitter:image:alt" content="${article.title}">
   
   <!-- WhatsApp optimized tags -->
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:image:secure_url" content="${imageUrl}">
   <meta name="whatsapp:image" content="${imageUrl}">
   
-  <!-- Additional image formats for better compatibility -->
-  <meta property="og:image:type" content="image/webp">
+  <!-- Telegram optimized tags -->
+  <meta name="telegram:image" content="${imageUrl}">
   <meta name="format-detection" content="telephone=no">
   
-  <!-- Cache control for better performance -->
-  <meta http-equiv="Cache-Control" content="public, max-age=3600">
-  <meta http-equiv="Expires" content="${new Date(Date.now() + 3600000).toUTCString()}">
+  <!-- Cache control optimized for social media crawlers -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   
   <!-- Telegram specific -->
   <meta name="telegram:channel" content="@francesnews">
@@ -149,6 +161,11 @@ serve(async (req) => {
       return new Response(html, {
         headers: {
           'Content-Type': 'text/html; charset=utf-8',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+          'Last-Modified': new Date(article.published_at).toUTCString(),
+          'ETag': `"${cacheParam}"`,
           ...corsHeaders
         }
       });

@@ -9,6 +9,7 @@ import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Layout from "@/components/Layout";
 import ShareButton from "@/components/ShareButton";
+import { Helmet } from "react-helmet-async";
 
 export default function ArticleView() {
   const { slug } = useParams<{ slug: string }>();
@@ -108,8 +109,58 @@ export default function ArticleView() {
       })
     : "Recentemente";
 
+  // Prepare SEO data
+  const baseUrl = "https://francesnews-lovable.lovable.app";
+  const articleUrl = `${baseUrl}/artigos/${article.slug}`;
+  const imageUrl = article.featured_image_url 
+    ? (article.featured_image_url.includes('supabase.co') || article.featured_image_url.includes('/storage/v1/object/public/')
+        ? `${article.featured_image_url}?width=1200&height=630&resize=cover&quality=85&format=jpeg`
+        : article.featured_image_url)
+    : `${baseUrl}/placeholder.svg`;
+  const description = article.excerpt || "Leia mais em Frances News";
+
   return (
     <Layout>
+      <Helmet>
+        <title>{article.title} - Frances News</title>
+        <meta name="description" content={description} />
+        
+        {/* Open Graph tags */}
+        <meta property="og:title" content={article.title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:secure_url" content={imageUrl} />
+        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={article.title} />
+        <meta property="og:url" content={articleUrl} />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Frances News" />
+        <meta property="og:locale" content="pt_BR" />
+        <meta property="article:author" content={authorName} />
+        <meta property="article:published_time" content={article.published_at} />
+        <meta property="article:section" content={article.categories?.name || "Notícias"} />
+        
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:site" content="@francesnews" />
+        <meta name="twitter:creator" content="@francesnews" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
+        <meta name="twitter:image:alt" content={article.title} />
+        
+        {/* WhatsApp and Telegram optimized tags */}
+        <meta name="whatsapp:image" content={imageUrl} />
+        <meta name="telegram:image" content={imageUrl} />
+        
+        {/* Additional meta tags */}
+        <meta name="robots" content="index, follow" />
+        <meta name="theme-color" content="#1a365d" />
+        <link rel="canonical" href={articleUrl} />
+      </Helmet>
+      
       <article className="container max-w-4xl mx-auto px-4 py-8">
         <Button 
           onClick={() => navigate("/")} 
